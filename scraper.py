@@ -1,18 +1,15 @@
 from bs4 import BeautifulSoup
 
 import requests
-response = requests.get('https://finance.yahoo.com/trending-tickers/')
+response = requests.get('https://finance.yahoo.com/quote/KO/news', allow_redirects=True)
 if response.status_code != 200:
-   print('Could not fetch the page')
+   print(response.status_code)
    exit(1)
 print('Successful')
 
 soup = BeautifulSoup(response.content, 'html.parser')
 # tickers = soup.find_all('td')
 # tickerlist = []
-for child in soup.descendants:
-    # name = td.a.attrs['title']
-    # tickerlist.append(name)
-    # print(name)
-    if child.td:
-            print(child.td)
+headline_link = soup.find('a', {'class': 'subtle-link fin-size-small titles noUnderline svelte-wdkn18'})
+
+print(headline_link.text)
