@@ -1,22 +1,19 @@
-import math
-from scipy.stats import norm
+
+from bs4 import BeautifulSoup
+
 import requests
-from urllib.parse import quote
-import os
-from dotenv import load_dotenv
-from bs4 import beuatifulsoup
+response = requests.get('https://finance.yahoo.com/trending-tickers/')
+if response.status_code != 200:
+   print('Could not fetch the page')
+   exit(1)
+print('Successful')
 
-def webscraper ():
-
-
-
-
-
-def main():
-    numbers = [1,2,3]
-    print("hello ")
-
-
-
-
-    
+soup = BeautifulSoup(response.content, 'html.parser')
+# tickers = soup.find_all('td')
+# tickerlist = []
+for child in soup.descendants:
+    # name = td.a.attrs['title']
+    # tickerlist.append(name)
+    # print(name)
+    if child.td:
+            print(child.td)
