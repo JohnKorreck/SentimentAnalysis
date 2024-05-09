@@ -18,11 +18,14 @@ def get_article_header_list(ticker):
         headline_text.append(header.text)
     return headline_text
 
-num = 1
+def new_file_info(textfile, ticker):
+    f = open(textfile, 'w')
+    num = 1
+    for header in get_article_header_list(ticker):
+        f.write(f'{num}. {header}\n\n')
+        num += 1
+    f.close()
 
+ticker = input('Enter a ticker symbol: ')
 
-tick = input('Enter a ticker: ')
-
-for header in get_article_header_list(tick):
-    print(f'{num}. ', header, '\n')
-    num += 1
+new_file_info('articleheadline.txt', ticker)
