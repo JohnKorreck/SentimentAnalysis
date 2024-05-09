@@ -1,15 +1,24 @@
 from bs4 import BeautifulSoup
 
 import requests
-response = requests.get('https://finance.yahoo.com/quote/KO/news', allow_redirects=True)
-if response.status_code != 200:
-   print(response.status_code)
-   exit(1)
-print('Successful')
+headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36'}
 
-soup = BeautifulSoup(response.content, 'html.parser')
-# tickers = soup.find_all('td')
-# tickerlist = []
-headline_link = soup.find('a', {'class': 'subtle-link fin-size-small titles noUnderline svelte-wdkn18'})
+def get_article_header_list(ticker):
+    url = f'https://finance.yahoo.com/quote/{ticker}/news'
+    response = requests.get(url, headers=headers)
+    if response.status_code != 200:
+        print(response.status_code)
+        exit(1)
+    print('Successful')
 
-print(headline_link.text)
+    soup = BeautifulSoup(response.content, 'html.parser')
+    headline_links = soup.find_all('a', {'class': 'subtle-link fin-size-small titles noUnderline svelte-wdkn18'})
+    headline_text = []
+    for header in headline_links:
+        headline_text.append(header.text)
+    return headline_text
+
+num = 1
+for header in get_article_header_list('AAP'):
+    print(f'{num}. ', header, '\n')
+    num += 1
