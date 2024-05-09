@@ -19,6 +19,10 @@ def get_article_header_list(ticker):
     return headline_text
 
 num = 1
-for header in get_article_header_list('AAP'):
+
+
+tick = input('Enter a ticker: ')
+
+for header in get_article_header_list(tick):
     print(f'{num}. ', header, '\n')
     num += 1
