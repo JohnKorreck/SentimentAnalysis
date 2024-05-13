@@ -1,5 +1,9 @@
 from bs4 import BeautifulSoup
+from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
+from scipy.special import softmax
+import torch
 import requests
+
 
 
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'}
@@ -26,3 +30,9 @@ def headliners(ticker):
         print("No headlines found")
 
 headliners('KO')
+
+classifier = pipeline("sentiment-analysis")
+
+res = classifier("I've been waiting for ")
+
+print(res)
