@@ -1,38 +1,56 @@
 from bs4 import BeautifulSoup
-from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
-from scipy.special import softmax
 import torch
 import requests
+import numpy as np
+import pandas as pd
+from transformers import pipeline
+from transformers import AutoTokenizer,AutoModelForSequenceClassification
 
-
-
-headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'}
-
-def headliners(ticker):
-
-    response = requests.get(f'https://finance.yahoo.com/quote/{ticker}/news', headers=headers)
-    
+def get_article_header_list(ticker):
+    headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36'}
+    url = f'https://finance.yahoo.com/quote/{ticker}/news'
+    response = requests.get(url, headers=headers)
     if response.status_code != 200:
         print(response.status_code)
         exit(1)
-    print('Request successful')
+    print('Successful')
 
     soup = BeautifulSoup(response.content, 'html.parser')
-
     headline_links = soup.find_all('a', {'class': 'subtle-link fin-size-small titles noUnderline svelte-wdkn18'})
+    headline_text = []
+    for header in headline_links:
+        headline_text.append(header.text)
+    return headline_text
 
+def new_file_info(textfile, ticker):
+    f = open(textfile, 'w')
     num = 1
-    if headline_links:
-        for headline in headline_links:
-            print(f"{num}. {headline.text}")
-            num += 1
-    else:
-        print("No headlines found")
+    for header in get_article_header_list(ticker):
+        f.write(f'{header}\n')
+        num += 1
+    f.close()
 
-headliners('KO')
+def ticker_sentiment(textfile):
+    model_name = "mrm8488/distilroberta-finetuned-financial-news-sentiment-analysis"
+    model = AutoModelForSequenceClassification.from_pretrained(model_name)
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    classifier = pipeline("sentiment-analysis", model=model, tokenizer=tokenizer)
+    f = open(textfile, 'r')
+    lines = f.readlines()
+    score = 0
+    for header in lines:
+        res = classifier(header)
+        if res[0]['label'] == 'positive':
+            score += 1
+        elif res[0]['label'] == 'negative':
+            score -= 1
+        else:
+            pass
+    f.close()
+    return score
 
-classifier = pipeline("sentiment-analysis")
+ticker = input('Enter a ticker symbol: ')
 
-res = classifier("I've been waiting for ")
+new_file_info(f'{ticker}-headlines.txt', ticker)
 
-print(res)
+print(ticker_sentiment(f'{ticker}-headlines.txt'))
