@@ -1,14 +1,9 @@
-from transformers import pipeline
-from transformers import AutoTokenizer,AutoModelForSequenceClassification
+from huggingface_hub import hf_hub_download
+import joblib
 
-model_name = "mrm8488/distilroberta-finetuned-financial-news-sentiment-analysis"
-model = AutoModelForSequenceClassification.from_pretrained(model_name)
-tokenizer = AutoTokenizer.from_pretrained(model_name)
+REPO_ID = "mrm8488/distilroberta-finetuned-financial-news-sentiment-analysis"
+FILENAME = "sklearn_model.joblib"
 
-classifier = pipeline("sentiment-analysis", model=model, tokenizer=tokenizer)
-
-res = classifier("10. Disney's Future Is Brighter Than It Appears Investors sold off Disney's stock, but the company is still growing in the right places. ")
-
-
-
-print (res)
+model = joblib.load(
+    hf_hub_download(repo_id=REPO_ID, filename=FILENAME)
+)
