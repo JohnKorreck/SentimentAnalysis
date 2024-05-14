@@ -54,3 +54,4 @@ ticker = input('Enter a ticker symbol: ')
 new_file_info(f'{ticker}-headlines.txt', ticker)
 
 print(ticker_sentiment(f'{ticker}-headlines.txt'))
+
