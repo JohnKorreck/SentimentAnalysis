@@ -69,14 +69,16 @@ def ticker_sentiment(header_list):
 def main():
     sp500tickers = sp500info()
     sentimentvalue = 0
-    x = 0
+    x = 1
     for ticker in sp500tickers.keys():
-        if x > 30:
+        if x == 504:
             break
-        if len(ticker) <= 4:
+        if (0 < len(ticker) < 5):
             header_list = get_article_header_list(ticker)
             sentimentvalue += ticker_sentiment(header_list)*.01*sp500tickers[ticker]
-        x += 1
+            print(x)
+            x += 1
     print(sentimentvalue)
 
-main()
+if __name__ == '__main__':
+    main()
